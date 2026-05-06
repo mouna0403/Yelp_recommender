@@ -1,44 +1,11 @@
 import numpy as np
-import pandas as pd
-from pathlib import Path
-
+from Yelp_recommender.preprocessing import load_preprocessed
 from Yelp_recommender.utils import haversine
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-MODEL_DIR = BASE_DIR / "models"
-
-df_food_business = None
-X_text = None
-text_sim = None
-indices = None
+df_food_business, X_text, text_sim, indices = load_preprocessed()
 
 
-def load_artifacts():
-    global df_food_business, X_text, text_sim, indices
-
-    if df_food_business is not None:
-        return
-
-    df_food_business = pd.read_parquet(MODEL_DIR / "df_food_business.parquet")
-    X_text = np.load(MODEL_DIR / "X_text.npy")
-    text_sim = np.load(MODEL_DIR / "text_sim.npy")
-    indices = pd.read_pickle(MODEL_DIR / "indices.pkl")
-
-    df_food_business.reset_index(drop=True, inplace=True)
-
-    indices = pd.Series(
-        df_food_business.index,
-        index=df_food_business["business_id"]
-    )
-
-# ----------------------------
-# RECOMMENDER FUNCTION
-# ----------------------------
 def get_reco(business_id, sim_matrix=None, top_n=5, city_threshold=15):
-
-    load_artifacts()
-
-    global df_food_business, text_sim, indices
 
     if sim_matrix is None:
         sim_matrix = text_sim
@@ -67,10 +34,3 @@ def get_reco(business_id, sim_matrix=None, top_n=5, city_threshold=15):
     recos = df_food_business.iloc[final_idx[:top_n]]
 
     return recos["business_id"].tolist()
-
-# ----------------------------
-# OPTIONAL LOCAL TEST
-# ----------------------------
-if __name__ == "__main__":
-    sample_id = df_food_business["business_id"].iloc[0]
-    print(get_reco(sample_id))

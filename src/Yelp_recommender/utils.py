@@ -64,3 +64,5 @@ def clean_text(t):
         ))
     )
 
+def encode_text(text):
+    return MODEL.encode(text, normalize_embeddings=True)
