@@ -13,7 +13,7 @@ from Yelp_recommender.utils import (
 # ----------------------------
 # CONFIG
 # ----------------------------
-st.set_page_config(page_title="Food Explorer", layout="wide", page_icon="🍽️")
+st.set_page_config(page_title="Where To Eat", layout="wide", page_icon="🍽️")
 
 # ----------------------------
 # GLOBAL CSS
@@ -328,7 +328,7 @@ div[data-testid="stAlert"] {
 # ----------------------------
 st.markdown("""
 <div class="hero-banner">
-    <p class="hero-title">🍽️ Food Explorer</p>
+    <p class="hero-title">🍽️ Where To Eat</p>
     <p class="hero-sub">Discover places that match your mood, not just your keywords.</p>
 </div>
 """, unsafe_allow_html=True)
@@ -353,7 +353,7 @@ if "liked_recos" not in st.session_state:
 # ----------------------------
 mode = st.radio(
     "HOW DO YOU WANT TO EXPLORE?",
-    ["🎯 By vibe", "✍️ Describe your mood"],
+    ["🎯 Choose what you like", "✍️ Tell us what you want"],
     horizontal=True
 )
 
@@ -365,16 +365,16 @@ st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
 # ----------------------------
 # INPUT ZONE
 # ----------------------------
-if mode == "🎯 By vibe":
+if mode == "🎯 Choose what you like":
     st.markdown('<p class="section-label">Choose your mood</p>', unsafe_allow_html=True)
     selected_categories = st.multiselect(
-        "Select vibes that match your moment",
+        "Select categories that match your moment",
         ALL_CATEGORIES,
         max_selections=5,
         label_visibility="collapsed"
     )
 else:
-    st.markdown('<p class="section-label">Describe your moment</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-label">Describe your plan</p>', unsafe_allow_html=True)
     user_query = st.text_input(
         "mood",
         placeholder="e.g. romantic rooftop dinner, loud night out with music, chill brunch with friends",
@@ -410,9 +410,9 @@ def display_business_card(row, card_class="biz-card", name_class="biz-name",
 # RECOMMENDATION ENGINE
 # ----------------------------
 if generate:
-    if mode == "🎯 By vibe":
+    if mode == "🎯 Choose what you like":
         if not selected_categories:
-            st.warning("Pick at least one vibe to explore.")
+            st.warning("Pick at least one categorie to explore.")
         else:
             user_emb = build_user_embedding(selected_categories)
             st.session_state.initial_recos = get_initial_recos(
@@ -420,7 +420,7 @@ if generate:
             )
     else:
         if not user_query:
-            st.warning("Describe your mood first.")
+            st.warning("Tell us what you want first.")
         else:
             user_emb = encode_text(user_query)
             scores = np.dot(X_text, user_emb)
@@ -459,14 +459,19 @@ if st.session_state.initial_recos is not None:
                 similar_df = df_food_business[
                     df_food_business["business_id"].isin(recos_ids)
                 ]
+                cols = st.columns(len(similar_df))
+
                 for j, (_, rec_row) in enumerate(similar_df.iterrows()):
-                    display_business_card(
-                        rec_row,
-                        card_class="sim-card",
-                        name_class="sim-name",
-                        desc_class="sim-desc",
-                        addr_class="sim-addr",
-                        accent_color=ACCENT_COLORS[j % len(ACCENT_COLORS)]
-                    )
+
+                    with cols[j]:
+
+                        display_business_card(
+                            rec_row,
+                            card_class="sim-card",
+                            name_class="sim-name",
+                            desc_class="sim-desc",
+                            addr_class="sim-addr",
+                            accent_color=ACCENT_COLORS[j % len(ACCENT_COLORS)]
+                        )
 
         st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)

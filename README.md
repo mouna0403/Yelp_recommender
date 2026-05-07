@@ -1,12 +1,13 @@
-# 🍽️ Food Explorer
+````md
+# 🍽️ Where to eat
 
-Food Explorer is a restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, and similar places)** based on mood, vibe, or free-text descriptions.
+Where to eat is a restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, bars, and similar places)** based on categories or free-text descriptions.
 
 ---
 
 ## ✨ Features
 
-* Explore restaurants by **vibe / categories** (e.g. brunch, sushi, nightlife)
+* Explore restaurants by selecting **what you like** (e.g. brunch, sushi, nightlife)
 * Search using **free-text input** (e.g. “romantic dinner”, “chill rooftop bar”)
 * Personalized recommendations using a **like-based feedback system**
 * “More like this” suggestions after each interaction
@@ -44,13 +45,13 @@ This project uses **uv** for dependency and environment management.
 
 ### 1. Install dependencies
 
-```bash id="uv1"
+```bash
 uv sync
-```
+````
 
 ### 2. Launch the Streamlit app
 
-```bash id="uv2"
+```bash
 uv run streamlit run src/Yelp_recommender/main.py
 ```
 
@@ -75,3 +76,6 @@ A Docker configuration is not provided at the moment, as the current pipeline in
 * deeper personalization based on user history
 * performance optimization of embeddings and similarity search
 * production-ready deployment setup
+
+```
+```
