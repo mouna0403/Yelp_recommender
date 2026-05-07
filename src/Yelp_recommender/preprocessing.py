@@ -1,117 +1,52 @@
-from Yelp_recommender.utils import MODEL, clean_text
-
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
+from pathlib import Path
+from Yelp_recommender.utils import MODEL, clean_text
 from tqdm import tqdm
-import joblib
 
-print("=== START PREPROCESSING ===")
-
-# ----------------------------
-# LOAD DATA
-# ----------------------------
-print("[1] Loading data...")
-df_final = pd.read_parquet("data/Yelp_dataset_reviews_enriched.parquet")
-print(f"Loaded: {df_final.shape}")
+BASE_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = BASE_DIR / "data"
 
 # ----------------------------
-# MULTI LABEL ENCODING
+# CACHE GLOBAL (IMPORTANT)
 # ----------------------------
-print("[2] Encoding categories...")
+_cache = {}
 
-mlb = MultiLabelBinarizer()
+def load_preprocessed():
+    if "done" in _cache:
+        return _cache["data"]
 
-cat_df = pd.DataFrame(
-    mlb.fit_transform(df_final['macro_categories'].fillna('[]')),
-    columns=mlb.classes_,
-    index=df_final.index
-)
+    print("=== START PREPROCESSING ===")
 
-cat_df = pd.concat(
-    [df_final.drop(columns=['macro_categories']), cat_df],
-    axis=1
-)
+    df_final = pd.read_parquet(DATA_DIR / "Yelp_dataset_reviews_enriched.parquet")
 
-print(f"Encoded shape: {cat_df.shape}")
+    mlb = MultiLabelBinarizer()
 
-# ----------------------------
-# FILTER FOOD
-# ----------------------------
-print("[3] Filtering Food & Beverage...")
+    cat_df = pd.DataFrame(
+        mlb.fit_transform(df_final["macro_categories"].fillna("[]")),
+        columns=mlb.classes_,
+        index=df_final.index
+    )
 
-df_food = cat_df[cat_df['Food & Beverage'] == 1]
-df_food_business = df_food.drop_duplicates(subset='business_id').reset_index(drop=True)
+    cat_df = pd.concat([df_final.drop(columns=["macro_categories"]), cat_df], axis=1)
 
-print(f"Food businesses: {df_food_business.shape}")
+    df_food = cat_df[cat_df["Food & Beverage"] == 1]
+    df_food_business = df_food.drop_duplicates(subset="business_id").reset_index(drop=True)
 
-# ----------------------------
-# TEXT CLEANING
-# ----------------------------
-print("[4] Cleaning text...")
+    tqdm.pandas()
+    texts = df_food_business["description"].fillna("").progress_apply(clean_text).tolist()
 
-tqdm.pandas()
+    X_text = MODEL.encode(texts, normalize_embeddings=True, show_progress_bar=True)
 
-texts = df_food_business["description"].fillna("").progress_apply(clean_text).tolist()
+    TEXT_SIM = cosine_similarity(X_text)
 
-print(f"Texts ready: {len(texts)}")
+    INDICES = pd.Series(df_food_business.index, index=df_food_business["business_id"])
 
-# ----------------------------
-# EMBEDDINGS
-# ----------------------------
-print("[5] Encoding embeddings...")
+    data = df_food_business, X_text, TEXT_SIM, INDICES
 
-model = MODEL
+    _cache["done"] = True
+    _cache["data"] = data
 
-X_text = model.encode(
-    texts,
-    normalize_embeddings=True,
-    show_progress_bar=True
-)
-
-print(f"Embeddings shape: {X_text.shape}")
-
-# ----------------------------
-# SIMILARITY MATRIX
-# ----------------------------
-print("[6] Computing similarity matrix...")
-
-text_sim = cosine_similarity(X_text)
-
-print("Similarity matrix computed")
-
-# ----------------------------
-# INDEX MAPPING
-# ----------------------------
-print("[7] Building index mapping...")
-
-indices = pd.Series(
-    df_food_business.index,
-    index=df_food_business["business_id"]
-)
-
-# ----------------------------
-# SAVE ARTIFACTS
-# ----------------------------
-print("[8] Saving artifacts...")
-
-# dataframe
-df_food_business.to_parquet("models/df_food_business.parquet", index=False)
-
-# embeddings
-np.save("models/X_text.npy", X_text)
-
-# similarity matrix
-np.save("models/text_sim.npy", text_sim)
-
-# index mapping
-indices.to_pickle("models/indices.pkl")
-
-
-print("All artifacts saved")
-
-# ----------------------------
-# END
-# ----------------------------
-print("=== DONE ===")
+    return data
