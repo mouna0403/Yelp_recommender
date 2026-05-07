@@ -1,4 +1,3 @@
-````md
 # 🍽️ Where to eat
 
 Where to eat is a restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, bars, and similar places)** based on categories or free-text descriptions.
@@ -47,7 +46,7 @@ This project uses **uv** for dependency and environment management.
 
 ```bash
 uv sync
-````
+```
 
 ### 2. Launch the Streamlit app
 
@@ -76,6 +75,4 @@ A Docker configuration is not provided at the moment, as the current pipeline in
 * deeper personalization based on user history
 * performance optimization of embeddings and similarity search
 * production-ready deployment setup
-
-```
 ```
