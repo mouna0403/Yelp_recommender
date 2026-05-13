@@ -1,22 +1,52 @@
 FROM python:3.10-slim
 
-# Install uv
-RUN pip install --no-cache-dir uv
+# ----------------------------
+# 1. Install minimal system dependencies
+# Required for compiling Python packages when no wheels are available
+# ----------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
+# ----------------------------
+# 2. Install uv (fast Python package manager)
+# ----------------------------
+RUN pip install uv
+
+# ----------------------------
+# 3. Set working directory
+# ----------------------------
 WORKDIR /app
 
-# Copy only dependency files first (cache Docker)
-COPY pyproject.toml ./
+# ----------------------------
+# 4. Copy dependency files first to leverage Docker cache
+# ----------------------------
+COPY pyproject.toml uv.lock ./
 
-# Install dependencies from pyproject.toml
-RUN uv pip install --system .
+# ----------------------------
+# 5. Install PyTorch separately using official CPU wheels
+# This avoids heavy dependency resolution inside sentence-transformers
+# ----------------------------
+RUN pip install --index-url https://download.pytorch.org/whl/cpu torch
 
-# Copy the rest of the project
+# ----------------------------
+# 6. Install remaining dependencies using uv with pip cache enabled
+# ----------------------------
+RUN --mount=type=cache,target=/root/.cache/pip \
+    uv pip install --system .
+
+# ----------------------------
+# 7. Copy application source code
+# ----------------------------
 COPY . .
 
-# Preload transformer model (optional but recommended)
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
-
+# ----------------------------
+# 8. Expose Streamlit default port
+# ----------------------------
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# ----------------------------
+# 9. Run Streamlit application
+# ----------------------------
+CMD ["streamlit", "run", "src/Yelp_recommender/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
