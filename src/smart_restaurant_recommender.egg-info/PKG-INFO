@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: smart-restaurant-recommender
+Version: 0.1.0
+Summary: Content-based recommendation system using Yelp dataset
+Author-email: Maïmouna <maymounaijdag@email.com>
+Requires-Dist: pandas==2.2.2
+Requires-Dist: numpy==1.26.4
+Requires-Dist: scikit-learn==1.4.2
+Requires-Dist: tqdm==4.66.4
+Requires-Dist: streamlit==1.35.0
+Requires-Dist: sentence-transformers==2.7.0
+Requires-Dist: joblib<2.0,>=1.3

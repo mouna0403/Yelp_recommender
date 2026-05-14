@@ -1,5 +1,5 @@
 [project]
-name = "yelp-recommender"
+name = "smart-restaurant-recommender"
 version = "0.1.0"
 description = "Content-based recommendation system using Yelp dataset"
 authors = [

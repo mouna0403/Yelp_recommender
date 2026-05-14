@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from pathlib import Path
-from Yelp_recommender.utils import MODEL, clean_text
+from Smart_Restaurant_Recommender.utils import MODEL, clean_text,build_full_text,parse_ambience
 from tqdm import tqdm
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -31,12 +31,15 @@ def load_preprocessed():
     )
 
     cat_df = pd.concat([df_final.drop(columns=["macro_categories"]), cat_df], axis=1)
+    cat_df[['Food & Beverage']]
 
     df_food = cat_df[cat_df["Food & Beverage"] == 1]
     df_food_business = df_food.drop_duplicates(subset="business_id").reset_index(drop=True)
+    df_food_business['Ambience_parsed'] = df_food_business['attributes'].apply(parse_ambience)
+    df_food_business["full_desc"] = df_food_business.apply(lambda row: build_full_text(row), axis=1)
 
     tqdm.pandas()
-    texts = df_food_business["description"].fillna("").progress_apply(clean_text).tolist()
+    texts = df_food_business["full_desc"].fillna("").progress_apply(clean_text).tolist()
 
     X_text = MODEL.encode(texts, normalize_embeddings=True, show_progress_bar=True)
 

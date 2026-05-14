@@ -1,36 +1,63 @@
 import numpy as np
-from Yelp_recommender.preprocessing import load_preprocessed
-from Yelp_recommender.utils import haversine
+import pandas as pd
+from pathlib import Path
 
+from Smart_Restaurant_Recommender.utils import haversine
+from Smart_Restaurant_Recommender.preprocessing import load_preprocessed
+
+# ----------------------------
+# PATHS (robust)
 df_food_business, X_text, text_sim, indices = load_preprocessed()
 
+# rebuild index mapping after reset
+indices = pd.Series(
+    df_food_business.index,
+    index=df_food_business["business_id"]
+)
 
-def get_reco(business_id, sim_matrix=None, top_n=5, city_threshold=15):
+# ----------------------------
+# RECOMMENDER FUNCTION
+# ----------------------------
 
-    if sim_matrix is None:
-        sim_matrix = text_sim
-
+def get_reco(
+    business_id,
+    top_n=5,
+    city_threshold=15,
+    alpha=0.7,   # weight for text similarity
+    beta=0.3,    # weight for geographic proximity
+):
+    # Get index of the reference business
     idx = indices[business_id]
 
-    sims = sim_matrix[idx]
+    # Text similarity scores (cosine similarity from embedding matrix)
+    text_scores = text_sim[idx].copy()
 
+    # Coordinates of the reference business
     lat1 = df_food_business.iloc[idx]["latitude"]
     lon1 = df_food_business.iloc[idx]["longitude"]
 
+    # Coordinates of all businesses
     lat2 = df_food_business["latitude"].values
     lon2 = df_food_business["longitude"].values
 
+    # Compute geographic distances (Haversine)
     dists = haversine(lat1, lon1, lat2, lon2)
 
-    same_city_idx = np.where(dists <= city_threshold)[0]
-    outside_idx = np.where(dists > city_threshold)[0]
+    # Proximity score normalized between 0 and 1 (closer = higher score)
+    prox_scores = 1 / (1 + dists)
+    prox_scores = prox_scores / prox_scores.max()
 
-    same_sorted = same_city_idx[np.argsort(sims[same_city_idx])[::-1]]
-    outside_sorted = outside_idx[np.argsort(sims[outside_idx])[::-1]]
+    # Final combined score (text similarity + proximity)
+    final_scores = alpha * text_scores + beta * prox_scores
 
-    final_idx = np.concatenate([same_sorted, outside_sorted])
-    final_idx = final_idx[final_idx != idx]
+    # Strong penalty for businesses outside the defined city radius
+    outside_mask = dists > city_threshold
+    final_scores[outside_mask] *= 0.5
 
-    recos = df_food_business.iloc[final_idx[:top_n]]
+    # Exclude the reference business itself
+    final_scores[idx] = -1
 
-    return recos["business_id"].tolist()
+    # Get top-N recommendations
+    top_idx = np.argsort(final_scores)[::-1][:top_n]
+
+    return list(df_food_business.iloc[top_idx]["business_id"].unique())
