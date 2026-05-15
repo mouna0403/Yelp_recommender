@@ -8,14 +8,13 @@
 
 ## ✨ Features
 
-* Explore restaurants by selecting **what you like** (categories, atmosphere, extras)
-* Filter by **price range** (Easy on the wallet / Comfortable / Treat yourself / Premium experience)
+* **Two exploration modes:** choose what you like (categories, atmosphere, extras) or describe what you want in plain text
+* Filter by **price range** ($ Easy on the wallet / $$ Comfortable / $$$ Treat yourself / $$$$ Premium experience)
 * Filter by **city** for location-aware recommendations
 * View detailed restaurant **attributes** (WiFi, parking, noise level, dress code, etc.) with one click
 * Personalized recommendations using a **like-based feedback system**
-* "More like this" suggestions after each interaction
+* **"More like this"** suggestions after each interaction
 * Clean and interactive Streamlit interface
-
 ---
 
 ## 🧠 How it works (simple explanation)
