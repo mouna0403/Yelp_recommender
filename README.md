@@ -10,7 +10,7 @@ Where to eat is a restaurant recommendation application that helps users discove
 
 * Explore restaurants by selecting **what you like** (categories, atmosphere, extras)
 * Filter by **price range** and **city** for more precise recommendations
-* View detailed restaurant **attributes** (amenities, services) with one click
+* View detailed restaurant **attributes** (WiFi, parking, noise level, dress code, etc.)  with one click
 * Personalized recommendations using a **like-based feedback system**
 * "More like this" suggestions after each interaction
 * Clean and interactive Streamlit interface
