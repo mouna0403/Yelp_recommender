@@ -391,11 +391,20 @@ if mode == "🎯 Choose what you like":
         )
 
     with col4:
-        selected_price = st.selectbox(
+        price_options = {
+            None: "Any price",
+            1: "$ (Easy on the wallet)",
+            2: "$$ (Comfortable)",
+            3: "$$$ (Treat yourself)",
+            4: "$$$$ (Premium experience)",
+        }
+        selected_price_value = st.selectbox(
             "Price",
-            [None, 1, 2, 3, 4],
-            format_func=lambda x: "Any price" if x is None else str(x),
+            options=list(price_options.keys()),
+            format_func=lambda x: price_options[x],
+            index=0,
         )
+        selected_price = selected_price_value
 
     with col5:
         city_counts = df_food_business["city"].value_counts(dropna=True)
@@ -417,12 +426,20 @@ else:
         user_query = st.session_state.get("text_query", "")
 
     with col2:
-        selected_price = st.selectbox(
+        price_options = {
+            None: "Any price",
+            1: "$ (Easy on the wallet)",
+            2: "$$ (Comfortable)",
+            3: "$$$ (Treat yourself)",
+            4: "$$$$ (Premium experience)",
+        }
+        selected_price_value = st.selectbox(
             "Price",
-            [None, 1, 2, 3, 4],
-            format_func=lambda x: "Any price" if x is None else str(x),
+            options=list(price_options.keys()),
+            format_func=lambda x: price_options[x],
             index=0,
         )
+        selected_price = selected_price_value
 
     with col3:
         city_counts = df_food_business["city"].value_counts(dropna=True)

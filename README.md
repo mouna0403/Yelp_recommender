@@ -2,15 +2,16 @@
   <img src="assets/Where_to_eat.png" width="100%" />
 </p>
 
-Where to eat is a restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, bars, and similar places)** based on categories or free-text descriptions.
+**Where to Eat** is an AI-powered restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, bars, and similar places)** based on categories or free-text descriptions.
 
 ---
 
 ## ✨ Features
 
 * Explore restaurants by selecting **what you like** (categories, atmosphere, extras)
-* Filter by **price range** and **city** for more precise recommendations
-* View detailed restaurant **attributes** (WiFi, parking, noise level, dress code, etc.)  with one click
+* Filter by **price range** (Easy on the wallet / Comfortable / Treat yourself / Premium experience)
+* Filter by **city** for location-aware recommendations
+* View detailed restaurant **attributes** (WiFi, parking, noise level, dress code, etc.) with one click
 * Personalized recommendations using a **like-based feedback system**
 * "More like this" suggestions after each interaction
 * Clean and interactive Streamlit interface
@@ -19,12 +20,16 @@ Where to eat is a restaurant recommendation application that helps users discove
 
 ## 🧠 How it works (simple explanation)
 
-The system uses a **transformer-based text model** to understand both:
+The system uses a **transformer-based AI model** that understands **meaning, not just keywords**.
 
-* restaurant descriptions
-* user queries
+Whether you type a free-text query like *"romantic rooftop dinner with jazz"* or select categories like *"sushi" + "trendy"*, the model captures the semantic intent behind your request and finds restaurants that truly match your mood.
 
-It converts text into embeddings (numerical representations) and compares them to find the most relevant matches.
+This means:
+- You can describe experiences, not just dish names
+- Your query is understood in context, not just matched by word presence
+- Category selection works the same way — the AI understands what "casual", "romantic", or "hipster" really means
+
+The system converts everything (restaurant descriptions + user inputs) into numerical representations called **embeddings**, then compares them to find the most relevant matches.
 
 ---
 
