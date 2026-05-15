@@ -1,30 +1,29 @@
-import numpy as np
-import pandas as pd
 from pathlib import Path
 
-from Smart_Restaurant_Recommender.utils import haversine
+import numpy as np
+import pandas as pd
+
 from Smart_Restaurant_Recommender.preprocessing import load_preprocessed
+from Smart_Restaurant_Recommender.utils import haversine
 
 # ----------------------------
 # PATHS (robust)
 df_food_business, X_text, text_sim, indices = load_preprocessed()
 
 # rebuild index mapping after reset
-indices = pd.Series(
-    df_food_business.index,
-    index=df_food_business["business_id"]
-)
+indices = pd.Series(df_food_business.index, index=df_food_business["business_id"])
 
 # ----------------------------
 # RECOMMENDER FUNCTION
 # ----------------------------
 
+
 def get_reco(
     business_id,
     top_n=5,
     city_threshold=15,
-    alpha=0.7,   # weight for text similarity
-    beta=0.3,    # weight for geographic proximity
+    alpha=0.7,  # weight for text similarity
+    beta=0.3,  # weight for geographic proximity
 ):
     # Get index of the reference business
     idx = indices[business_id]

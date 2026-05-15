@@ -1,10 +1,18 @@
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics.pairwise import cosine_similarity
 from pathlib import Path
-from Smart_Restaurant_Recommender.utils import MODEL, clean_text,build_full_text,parse_ambience
+
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import MultiLabelBinarizer
 from tqdm import tqdm
+
+from Smart_Restaurant_Recommender.utils import (
+    MODEL,
+    build_attribute_text,
+    build_full_text,
+    clean_text,
+    extract_price_range,
+    parse_ambience,
+)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"
@@ -13,6 +21,7 @@ DATA_DIR = BASE_DIR / "data"
 # CACHE GLOBAL (IMPORTANT)
 # ----------------------------
 _cache = {}
+
 
 def load_preprocessed():
     if "done" in _cache:
@@ -27,16 +36,29 @@ def load_preprocessed():
     cat_df = pd.DataFrame(
         mlb.fit_transform(df_final["macro_categories"].fillna("[]")),
         columns=mlb.classes_,
-        index=df_final.index
+        index=df_final.index,
     )
 
     cat_df = pd.concat([df_final.drop(columns=["macro_categories"]), cat_df], axis=1)
-    cat_df[['Food & Beverage']]
+    cat_df[["Food & Beverage"]]
 
     df_food = cat_df[cat_df["Food & Beverage"] == 1]
-    df_food_business = df_food.drop_duplicates(subset="business_id").reset_index(drop=True)
-    df_food_business['Ambience_parsed'] = df_food_business['attributes'].apply(parse_ambience)
-    df_food_business["full_desc"] = df_food_business.apply(lambda row: build_full_text(row), axis=1)
+    df_food_business = df_food.drop_duplicates(subset="business_id").reset_index(
+        drop=True
+    )
+    df_food_business["Ambience_parsed"] = df_food_business["attributes"].apply(
+        parse_ambience
+    )
+    df_food_business["full_desc"] = df_food_business.apply(
+        lambda row: build_full_text(row), axis=1
+    )
+    df_food_business["RestaurantsPriceRange2"] = df_food_business["attributes"].apply(
+        extract_price_range
+    )
+
+    df_food_business["attributes_text"] = df_food_business["attributes"].apply(
+        build_attribute_text
+    )
 
     tqdm.pandas()
     texts = df_food_business["full_desc"].fillna("").progress_apply(clean_text).tolist()
