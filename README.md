@@ -1,4 +1,6 @@
-# 🍽️ Where to eat
+<p align="center">
+  <img src="assets/Where_to_eat.png" width="100%" />
+</p>
 
 Where to eat is a restaurant recommendation application that helps users discover **food businesses (restaurants, cafés, bars, and similar places)** based on categories or free-text descriptions.
 
