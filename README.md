@@ -8,10 +8,11 @@ Where to eat is a restaurant recommendation application that helps users discove
 
 ## ✨ Features
 
-* Explore restaurants by selecting **what you like** (e.g. brunch, sushi, nightlife)
-* Search using **free-text input** (e.g. “romantic dinner”, “chill rooftop bar”)
+* Explore restaurants by selecting **what you like** (categories, atmosphere, extras)
+* Filter by **price range** and **city** for more precise recommendations
+* View detailed restaurant **attributes** (amenities, services) with one click
 * Personalized recommendations using a **like-based feedback system**
-* “More like this” suggestions after each interaction
+* "More like this" suggestions after each interaction
 * Clean and interactive Streamlit interface
 
 ---
@@ -24,19 +25,6 @@ The system uses a **transformer-based text model** to understand both:
 * user queries
 
 It converts text into embeddings (numerical representations) and compares them to find the most relevant matches.
-
----
-
-## 📊 Data exploration
-
-All the data exploration, analysis, and reasoning behind the approach is available in the `notebooks/` folder.
-
-This helps understand:
-
-* how the dataset was cleaned
-* how food businesses were filtered
-* how categories and text data were processed
-* the intuition behind the recommendation strategy
 
 ---
 
