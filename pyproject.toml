@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "Content-based recommendation system using Yelp dataset"
 authors = [
     { name = "Maïmouna", email = "maymounaijdag@email.com" }
+    
 ]
-requires-python = "==3.11.8"
+requires-python = ">=3.11,<3.12"
 
 dependencies = [
     "pandas==2.2.2",
