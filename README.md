@@ -34,19 +34,19 @@ The system converts everything (restaurant descriptions + user inputs) into nume
 
 ## 🚀 How to run the app
 
-This project uses **uv** for dependency and environment management.
+### Option 1 — Use the deployed app
 
-### 1. Install dependencies
+[https://smartrestaurantrecommender-hs7vjtml7rmlr5dr9detiv.streamlit.app/](https://smartrestaurantrecommender-hs7vjtml7rmlr5dr9detiv.streamlit.app/)
 
-```bash
+---
+
+### Option 2 — Run locally
+
+```bash id="p8v2kq"
 uv sync
-```
-
-### 2. Launch the Streamlit app
-
-```bash
 uv run streamlit run src/Yelp_recommender/main.py
 ```
+
 
 ---
 
